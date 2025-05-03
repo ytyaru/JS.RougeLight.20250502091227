@@ -1,0 +1,30 @@
+<script>
+window.addEventListener('DOMContentLoaded', async(e)=>{
+class AsyncEvent {
+    static make(el, eventName) {
+        const handler = {
+            listener: null,
+            emit(e) {if (this.listener) {this.listener(e)}},
+            listen(fn) {this.listener = fn}
+        }
+        el.addEventListener(eventName, e => handler.emit(e));
+        //return () => new Promise((res, rej) => {handler.listen(e => res(e))});
+        return () => new Promise((res, rej) => {
+            handler.listen(e => {
+                const P = parseInt(e.currentTarget.dataset.pos);
+                res(P);
+//                if (this.hands[P].cost <= this.act) {this._hand = this.hands[P].kind; res(this._hand);}
+                //if (this.hands[P].cost <= this.act) {this._hand = this.hands[P].kind; Promise.resolve(this._hand);}
+            })
+        });
+    }
+}
+const bnt0c = AsyncEvent.make(document.querySelector(`#btn-0`), 'click');
+const bnt1c = AsyncEvent.make(document.querySelector(`#btn-1`), 'click');
+await bnt0c();
+await bnt1c();
+console.log('A & B');
+});
+</script>
+<button id="btn-0" data-pos="0">0</button>
+<button id="btn-1" data-pos="1">1</button>
