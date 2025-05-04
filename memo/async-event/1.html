@@ -1,0 +1,74 @@
+<script>
+window.addEventListener('DOMContentLoaded', async(e)=>{
+class AsyncEventListener {
+    constructor(el, eventName, listener) {
+        this._el = el;
+        this._eventName = eventName;
+        //this._listener = null;
+        //this._method = method;
+//        this._method = ('function'===typeof method) ? method : (e => res(parseInt(e.currentTarget.dataset.pos)));
+        this._listener = ('function'===typeof listener) ? listener : (e => res(parseInt(e.currentTarget.dataset.pos)));
+    }
+    init() {
+        if (this._listener) {return}
+        const handler = {
+            listener: null,
+            emit(e) {if (this.listener) {this.listener(e)}},
+            listen(fn) {this.listener = fn}
+        }
+        this._listener = (e => handler.emit(e));
+        this._el.addEventListener(this._eventName, this._listener);
+        return () => new Promise((res, rej) => handler.listen(e => res(parseInt(e.currentTarget.dataset.pos))));
+    }
+    /*
+    init() {
+        if (this._listener) {return}
+        const handler = {
+            listener: null,
+            emit(e) {if (this.listener) {this.listener(e)}},
+            listen(fn) {this.listener = fn}
+        }
+        this._listener = (e => handler.emit(e));
+        this._el.addEventListener(this._eventName, this._listener);
+        return () => new Promise((res, rej) => handler.listen(e => res(parseInt(e.currentTarget.dataset.pos))));
+    }
+    */
+    /*
+    init() {
+        if (this._listener) {return}
+        this._el.addEventListener(this._eventName, this._listener);
+        return () => new Promise((res, rej) => this._listener());
+    }
+    */
+    fin() {
+        if (null===this._listener) {return}
+        this._el.removeEventListener(this._eventName, this._listener)
+        this._listener = null;
+    }
+}
+/*
+class AsyncEvent {
+    static make(el, eventName) {
+        const handler = {
+            listener: null,
+            emit(e) {if (this.listener) {this.listener(e)}},
+            listen(fn) {this.listener = fn}
+        }
+        el.addEventListener(eventName, e => handler.emit(e));
+        return () => new Promise((res, rej) => handler.listen(e => res(parseInt(e.currentTarget.dataset.pos))));
+    }
+}
+const bnt0c = AsyncEvent.make(document.querySelector(`#btn-0`), 'click');
+const bnt1c = AsyncEvent.make(document.querySelector(`#btn-1`), 'click');
+await bnt0c();
+await bnt1c();
+console.log('A & B');
+*/
+const bnt0c = new AsyncEventListener(document.querySelector(`#btn-0`), 'click')
+console.log('A');
+await bnt0c.init();
+console.log('B');
+});
+</script>
+<button id="btn-0" data-pos="0">0</button>
+<button id="btn-1" data-pos="1">1</button>
