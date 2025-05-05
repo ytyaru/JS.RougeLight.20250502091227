@@ -1,0 +1,41 @@
+<script>
+window.addEventListener('DOMContentLoaded', async(e)=>{
+class AsyncEventListener {
+    constructor(el, eventName, fn) {
+        this._el = el;
+        this._eventName = eventName;
+        this._listener = null;
+        this._fn = ('function'===typeof fn) ? fn : (e => res(parseInt(e.currentTarget.dataset.pos)));
+        this._isAdd = false;
+    }
+    init() {
+        if (this._isAdd){return}
+        const handler = {
+            listener: null,
+            res: null,
+            rej: null,
+            emit(e) {if (this.listener) {this.listener(e,this.res,this.rej)}},
+            listen(fn,res,rej) {this.listener = fn; this.res=res; this.rej=rej;}
+        }
+        this._listener = (e => handler.emit(e));
+        this._el.addEventListener(this._eventName, this._listener);
+        this._isAdd = true;
+        return () => new Promise((res, rej) => handler.listen(this._fn, res, rej));
+//        return this.make();
+    }
+//    make() {return () => new Promise((res, rej) => handler.listen(this._fn, res, rej))}
+    fin() {
+        if (null===this._listener) {return}
+        this._el.removeEventListener(this._eventName, this._listener)
+        this._listener = null;
+    }
+}
+const bnt0c = new AsyncEventListener(document.querySelector(`#btn-0`), 'click', ((e,res,rej) => res(parseInt(e.currentTarget.dataset.pos))));
+console.log('A');
+const click0 = bnt0c.init();
+const click0Res = await click0();
+console.log('B', click0Res);
+});
+</script>
+<button id="btn-0" data-pos="0">0</button>
+<button id="btn-1" data-pos="1">1</button>
