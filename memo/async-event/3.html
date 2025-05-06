@@ -20,9 +20,12 @@ class AsyncEventListener {
         this._listener = (e => this._handler.emit(e));
         this._el.addEventListener(this._eventName, this._listener);
     }
-    promise() {return new Promise((res, rej) => this._handler.listen(this._fn, res, rej))}
-    fn() {return () => this.promise()}
-    async run() {return await this.fn()()}
+    //promise() {return new Promise((res, rej) => this._handler.listen(this._fn, res, rej))}
+    get promise() {return new Promise((res, rej) => this._handler.listen(this._fn, res, rej))}
+    //fn() {return () => this.promise}
+    get fn() {return () => this.promise}
+    //async run() {return await this.fn()()}
+    async run() {return await this.fn()}
     fin() {
         if (null===this._listener) {return}
         this._el.removeEventListener(this._eventName, this._listener);
@@ -36,10 +39,11 @@ bnt1c.init();
 console.log('A');
 let click0Res = await bnt0c.run();
 console.log('B', click0Res);
-const fn0 = await bnt0c.fn();
-click0Res = await fn0()
+//const fn0 = await bnt0c.fn();
+//click0Res = await fn0()
+click0Res = await bnt0c.fn();
 console.log('D', click0Res);
-const [x0, x1] = await Promise.all([bnt0c.promise(), bnt1c.promise()]);
+const [x0, x1] = await Promise.all([bnt0c.promise, bnt1c.promise]);
 console.log('E', x0, x1);
 });
 </script>
