@@ -9,6 +9,13 @@ window.addEventListener('DOMContentLoaded', async(e)=>{
     console.log('Random.I():', Random.I())
     console.log('Random.I(6):', Random.I(6)) // 0〜5
     console.log('Random.I(1,6):', Random.I(1,6)) // 1〜6
+    console.log('Random.D(6):', Random.D(6)) // 1〜6
+    console.log('Random.D(6) ⚀ 1:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===1).length}/100`) // 1〜6
+    console.log('Random.D(6) ⚅ 6:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===6).length}/100`) // 1〜6
+    console.log('Random.D(6) ⚁ 2:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===2).length}/100`) // 1〜6
+    console.log('Random.D(6) ⚂ 3:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===3).length}/100`) // 1〜6
+    console.log('Random.D(6) ⚃ 4:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===4).length}/100`) // 1〜6
+    console.log('Random.D(6) ⚄ 5:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===5).length}/100`) // 1〜6
     console.log('Random.P():', Random.P())    // 50%
     console.log('Random.P(0):', Random.P(0))   // 0%
     console.log('Random.P(100):', Random.P(100)) // 100%
@@ -151,9 +158,113 @@ window.addEventListener('DOMContentLoaded', async(e)=>{
         return Array.isArray(Ns) && 3===Ns.length && Ns.every(v=>V<=v && v<=W);
     })
     a.t(()=>{
-        const [V,W,N] = [1,6,10];
+        const [V,W,N] = [1,6,10]; // 1〜6 10回 3D6
         const Ns = Random.Ns(V, W, N);
         return Array.isArray(Ns) && N===Ns.length && Ns.every(v=>V<=v && v<=W);
+    })
+    a.t(()=>{
+        const Ps = Random.Ps();
+        return Array.isArray(Ps) && 3===Ps.length && Ps.every(v=>'boolean'===typeof v);
+    })
+    a.t(()=>{
+        const V = 12.5;
+        const Ps = Random.Ps(V);
+        return Array.isArray(Ps) && 3===Ps.length && Ps.every(v=>'boolean'===typeof v);
+    })
+    a.t(()=>{
+        const [V,N] = [12.5,10]; // 12.5% 10回
+        const Ps = Random.Ps(V, N);
+        return Array.isArray(Ps) && N===Ps.length && Ps.every(v=>'boolean'===typeof v);
+    })
+    a.t(()=>{
+        const Fs = Random.Fs();
+        return Array.isArray(Fs) && 3===Fs.length && Fs.every(v=>'boolean'===typeof v);
+    })
+    a.t(()=>{
+        const V = 2;
+        const Fs = Random.Fs(V); // 2/2 100%
+        return Array.isArray(Fs) && 3===Fs.length && Fs.every(v=>'boolean'===typeof v && true===v);
+    })
+    a.t(()=>{
+        const [V,W] = [2,3]; // 2/3 66.6%
+        const Fs = Random.Fs(V, W);
+        return Array.isArray(Fs) && 3===Fs.length && Fs.every(v=>'boolean'===typeof v);
+    })
+    a.t(()=>{
+        const [V,W,N] = [2,7,10]; // 2/7 28.5% 10回
+        const Fs = Random.Fs(V, W, N);
+        return Array.isArray(Fs) && N===Fs.length && Fs.every(v=>'boolean'===typeof v);
+    })
+
+    // 複数回試行した結果の数と比を返す
+    a.t(()=>{
+        const Pn = Random.Pn();
+        console.log(Pn)
+        return 'object'===typeof Pn && null!==Pn
+            && Pn.hasOwnProperty('t')
+            && Pn.hasOwnProperty('f')
+            && Pn.hasOwnProperty('n')
+            && Pn.hasOwnProperty('r');
+    })
+    a.t(()=>{
+        const V = 12.5;
+        const Pn = Random.Pn(V);
+        console.log(Pn)
+        return 'object'===typeof Pn && null!==Pn
+            && Pn.hasOwnProperty('t')
+            && Pn.hasOwnProperty('f')
+            && Pn.hasOwnProperty('n')
+            && Pn.hasOwnProperty('r');
+    })
+    a.t(()=>{
+        const [V,N] = [12.5,100]; // 12.5% 100回
+        const Pn = Random.Pn(V, N);
+        console.log(Pn)
+        return 'object'===typeof Pn && null!==Pn
+            && Pn.hasOwnProperty('t')
+            && Pn.hasOwnProperty('f')
+            && Pn.hasOwnProperty('n')
+            && Pn.hasOwnProperty('r');
+    })
+    // 分数
+    a.t(()=>{
+        const Fn = Random.Fn(); // 1/2 50% 3回
+        console.log(Fn)
+        return 'object'===typeof Fn && null!==Fn
+            && Fn.hasOwnProperty('t')
+            && Fn.hasOwnProperty('f')
+            && Fn.hasOwnProperty('n')
+            && Fn.hasOwnProperty('r');
+    })
+    a.t(()=>{
+        const V = 2;
+        const Fn = Random.Fn(V); // 2/2 100% 3回
+        console.log(Fn)
+        return 'object'===typeof Fn && null!==Fn
+            && Fn.hasOwnProperty('t')
+            && Fn.hasOwnProperty('f')
+            && Fn.hasOwnProperty('n')
+            && Fn.hasOwnProperty('r');
+    })
+    a.t(()=>{
+        const [V,W] = [3,10]; // 3/10 30%
+        const Fn = Random.Fn(V, W);
+        console.log(Fn)
+        return 'object'===typeof Fn && null!==Fn
+            && Fn.hasOwnProperty('t')
+            && Fn.hasOwnProperty('f')
+            && Fn.hasOwnProperty('n')
+            && Fn.hasOwnProperty('r');
+    })
+    a.t(()=>{
+        const [V,W,N] = [3,4,100]; // 3/4 75% 10回
+        const Fn = Random.Fn(V, W, N);
+        console.log(Fn)
+        return 'object'===typeof Fn && null!==Fn
+            && Fn.hasOwnProperty('t')
+            && Fn.hasOwnProperty('f')
+            && Fn.hasOwnProperty('n')
+            && Fn.hasOwnProperty('r');
     })
     a.fin();
 });

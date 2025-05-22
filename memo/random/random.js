@@ -6,6 +6,7 @@ class Random {
         const value = array[0] / (0xFFFFFFFF + 1); // 0.0〜1.0
         return value;
     }
+    D(v=6){return this.I(1,v)}// TRPGで使うダイスDice（1〜vの出目をもつ賽を3回振る。4,6,8,12,20,100等）
     I(v=100, w=undefined) {// Integer 整数（引数1個:0〜v-1の整数値、引数2個:v〜w迄の整数値）
         if (undefined===w) {
             if (this.#isN(v)) {return Math.floor(this.R * v)}
@@ -13,7 +14,8 @@ class Random {
         } else {
             if (this.#isN(v) && this.#isN(w)) {
                 if (w <= v) {this.#notMinMax(v,w)}
-                return Math.floor(this.R * (w-v)) + v;
+                //return Math.floor(this.R * (w-v)) + v;
+                return Math.floor(this.R * (w-v+1)) + v;
             }
             this.#notMinMax(v,w);
 //            throw new Error(`引数が二つある時は(最小値,最大値)の順であるべきです。各値は自然数のみ許容します。:(${v}, ${w})`)
@@ -68,25 +70,27 @@ class Random {
     #notP(v) {throw new Error(`引数vは0〜100迄の実数値であるべきです。:v=${v}`)}
     #hasZero(v,w) {if (0===v || 0===w) {throw new Error(`引数v,wは非0であるべきです。:v=${v},w=${w}`)}}
 
-    // 複数回試行した結果を配列として返す
+    // 複数回試行した結果を配列として返す s 複数形 s Summary 要約
     Rs(N=3) {return [...new Array(parseInt(N))].map((_,i)=>this.R)} // Real
     Is(v=100, N=3) {return [...new Array(parseInt(N))].map((_,i)=>this.I(v))} // Integer
     Ns(v=1, w=100, N=3) {return [...new Array(parseInt(N))].map((_,i)=>this.I(v,w))} // Natural
-    Ps(v=100, N=3) {return [...new Array(parseInt(N))].map((_,i)=>this.P(v))} // Parcentage     x Rate Realと重複する
-    Fs(v=1, w=3, N=3) {return [...new Array(parseInt(N))].map((_,i)=>this.P(v,w))} // Fraction
-    // 複数回試行した結果の真偽数と比率を返す
-    Pn(v=100, N=3) { // Parcentage num    x Rate Realと重複する
+    Ds(v=6, N=3) {return this.Ns(1,v,N)} // TRPGで使う3D6等（1〜6の出目をもつ賽を3回振る）
+    Ps(v=50, N=3) {return [...new Array(parseInt(N))].map((_,i)=>this.P(v))} // Parcentage     x Rate Realと重複する
+    Fs(v=1, w=2, N=3) {return [...new Array(parseInt(N))].map((_,i)=>this.P(v,w))} // Fraction
+    // 複数回試行した結果の真偽数と比率を返す n num d detail
+    Pn(v=50, N=3) { // Parcentage num    x Rate Realと重複する
         const Ps=this.Ps(v,N);
         const T = Ps.filter(v=>v).length;
         const F = Ps.filter(v=>!v).length;
-        return ({t:T, f:F, r:T/F})
+        const R = 0===T ? 0 : 0===F ? 1 : T/N;
+        return ({t:T, f:F, n:N, r:R, a:Ps})
     }
-    Fn(v=1, w=3, N=3) { // Fraction num
-        return [...new Array(parseInt(N))].map((_,i)=>this.P(v,w))
+    Fn(v=1, w=2, N=3) { // Fraction num
         const Fs = this.Fs(v,w,N);
         const T = Fs.filter(v=>v).length;
         const F = Fs.filter(v=>!v).length;
-        return ({t:T, f:F, r:T/F})
+        const R = 0===T ? 0 : 0===F ? 1 : T/N;
+        return ({t:T, f:F, n:N, r:R, a:Fs})
     }
     //Fn(v=1, w=100, N=3) {return [...new Array(parseInt(N))].map((_,i)=>this.P(v,w))} // Fraction
 
