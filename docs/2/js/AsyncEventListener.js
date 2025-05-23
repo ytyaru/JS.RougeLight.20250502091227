@@ -8,6 +8,7 @@ class AsyncEventListener {
         //this._fn = ('function'===typeof fn) ? fn : ((e,res,rej) => res(parseInt(e.currentTarget.dataset.pos)));
         //this._fn = ('function'===typeof fn) ? fn : ((e,res,rej) => res(parseInt(e.currentTarget.dataset.id)));
         this._fn = ('function'===typeof fn) ? fn : ((e,res,rej) => res(parseInt(e.currentTarget.dataset.pos)));
+//        this._fn = ('function'===typeof fn) ? fn : ((e,res,rej) => res(parseInt(e.currentTarget.dataset.pos)-1));
     }
     init() {
         if (this._listener){return}

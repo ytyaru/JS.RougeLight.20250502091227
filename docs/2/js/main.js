@@ -46,6 +46,8 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     console.log(heroHand, enemyHand);
     hero._hand = heroHand;
     enemy._hand = enemyHand;
+    console.log(hero.hands)
+    console.log(hero.hands[hero._hand], enemy.hands[enemy._hand])
 
     /*
     console.log('*********')
