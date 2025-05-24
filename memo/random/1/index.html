@@ -1,0 +1,328 @@
+<meta charset="UTF-8">
+<script src="../../../docs/lib/util/type.js"></script>
+<script src="../../../docs/lib/util/test/assertion.js"></script>
+<script src="random.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(e)=>{
+    console.log(Random)
+    console.log('Random.R:', Random.R)
+    console.log('Random.I():', Random.I())
+    console.log('Random.I(6):', Random.I(6)) // 0〜5
+    console.log('Random.I(1,6):', Random.I(1,6)) // 1〜6
+    console.log('Random.D(6):', Random.D(6)) // 1〜6
+    console.log('Random.D(6) ⚀ 1:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===1).length}/100`) // 1〜6
+    console.log('Random.D(6) ⚅ 6:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===6).length}/100`) // 1〜6
+    console.log('Random.D(6) ⚁ 2:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===2).length}/100`) // 1〜6
+    console.log('Random.D(6) ⚂ 3:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===3).length}/100`) // 1〜6
+    console.log('Random.D(6) ⚃ 4:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===4).length}/100`) // 1〜6
+    console.log('Random.D(6) ⚄ 5:', `${[...new Array(100)].map((_,i)=>Random.D(6)).filter(v=>v===5).length}/100`) // 1〜6
+    console.log('Random.P():', Random.P())    // 50%
+    console.log('Random.P(0):', Random.P(0))   // 0%
+    console.log('Random.P(100):', Random.P(100)) // 100%
+    console.log('Random.P(50):', Random.P(50))  // 50%
+    console.log('Random.P(1,3):', Random.P(1,3)) // 1/3  33.3%
+    console.log('Random.L([1,1,1]):', Random.L([1,1,1])) // 0〜2を返す。1/3  33.3%
+    console.log('Random.L([3,1,6]):', Random.L([3,1,6])) // 0〜2を返す。0:30%, 1:10%, 2:60%
+    console.log('Random.Ls([3,1,6]):', Random.Ls([3,1,6])) // 0〜2を返す。10回試行する。0:30%, 1:10%, 2:60%
+    console.log('Random.Ln([3,1,6]):', Random.Ln([3,1,6])) // 0〜2を返す。10回試行する。集計する。
+
+    // エラー
+//    console.log('Random.I(0):', Random.I(0)) // Error: 引数vは0より大きくNumber.MAX_SAFE_INTEGER以下の整数値であるべきです。
+//    console.log('Random.I(-1):', Random.I(-1)) // Error: 引数vは0より大きくNumber.MAX_SAFE_INTEGER以下の整数値であるべきです。
+//    console.log('Random.I(-1,3):', Random.I(-1,3)) // Error: 引数が二つある時は(最小値,最大値)の順であるべきです。
+//    console.log('Random.I(1,-3):', Random.I(1,-3)) // Error: 引数が二つある時は(最小値,最大値)の順であるべきです。
+//    console.log('Random.I(-3,1):', Random.I(-3,1)) // Error: 引数が二つある時は(最小値,最大値)の順であるべきです。
+//    console.log('Random.I(-3,-1):', Random.I(-3,-1)) // Error: 引数が二つある時は(最小値,最大値)の順であるべきです。
+//    console.log('Random.P(0,3):', Random.P(0,3)) // 引数が二つある時は(分子,分母)であるべきです。
+//    console.log('Random.P(1,0):', Random.P(1,0)) // 引数が二つある時は(分子,分母)であるべきです。
+    const a = new Assertion();
+    // 1. 正常系
+    // 1-1. 実数
+    a.t(()=>{
+        const R = Random.R;
+        console.log('Random.R:', R)
+        return 0<=R && R<=1;
+    })
+    // 1-2. 整数
+    a.t(()=>{
+        const I = Random.I();
+        console.log('Random.I:', I)
+        return 0<=I && I<=100-1;
+    })
+    a.t(()=>{
+        const V = 6;
+        const I = Random.I(V);
+        console.log(`Random.I(${V}):`, I)
+        return 0<=I && I<=V-1;
+    })
+    a.t(()=>{
+        const [V,W] = [1,6];
+        const I = Random.I(V,W);
+        console.log(`Random.I(${V},${W}):`, I)
+        return V<=I && I<=W;
+    })
+    // 1-3. 確率
+    a.t(()=>{
+        const P = Random.P();
+        console.log(`Random.P():`, P)
+        return 'boolean'===typeof P;
+    })
+    a.t(()=>{
+        const V = 0;
+        const P = Random.P(V);
+        console.log(`Random.P(${V}):`, P)
+        return 'boolean'===typeof P && false===P;
+    })
+    a.t(()=>{
+        const V = 100;
+        const P = Random.P(V);
+        console.log(`Random.P(${V}):`, P)
+        return 'boolean'===typeof P && true===P;
+    })
+    a.t(()=>{
+        const V = 50;
+        const P = Random.P(V);
+        console.log(`Random.P(${V}):`, P)
+        return 'boolean'===typeof P;
+    })
+    a.t(()=>{
+        const V = 12.5;
+        const P = Random.P(V);
+        console.log(`Random.P(${V}):`, P)
+        return 'boolean'===typeof P;
+    })
+    a.t(()=>{
+        const [V,W] = [1,1]; // 1/1  100%
+        const P = Random.P(V,W);
+        console.log(`Random.P(${V},${W}):`, P)
+        return 'boolean'===typeof P && true===P;
+    })
+    a.t(()=>{
+        const [V,W] = [1,3]; // 1/3  33.3%
+        const P = Random.P(V,W);
+        console.log(`Random.P(${V},${W}):`, P)
+        return 'boolean'===typeof P;
+    })
+    // 100回試行(12.5%なら12回前後(8〜16回程度)で真になる)
+    a.t(()=>{
+        const V = 12.5;
+        const Ps = [...new Array(100)].map((_,i)=>Random.P(V));
+        const T = Ps.filter(v=>v).length;
+        const F = Ps.filter(v=>!v).length;
+        console.log(`Random.P(${V}): ${T}/100 真`)
+        console.log(`Random.P(${V}): ${F}/100 偽`)
+        return true && 6<=T && T<=25;
+    })
+
+    // 2. 異常系
+    a.e(Error, `引数vは0より大きくNumber.MAX_SAFE_INTEGER以下の整数値であるべきです。:v=0`, ()=>Random.I(0))
+    a.e(Error, `引数vは0より大きくNumber.MAX_SAFE_INTEGER以下の整数値であるべきです。:v=-1`, ()=>Random.I(-1))
+    a.e(Error, `引数が二つある時は(最小値,最大値)の順であるべきです。各値は自然数のみ許容します。:(-1, 3)`, ()=>Random.I(-1,3))
+    a.e(Error, `引数が二つある時は(最小値,最大値)の順であるべきです。各値は自然数のみ許容します。:(1, -3)`, ()=>Random.I(1,-3))
+    a.e(Error, `引数が二つある時は(最小値,最大値)の順であるべきです。各値は自然数のみ許容します。:(-3, 1)`, ()=>Random.I(-3,1))
+    a.e(Error, `引数が二つある時は(最小値,最大値)の順であるべきです。各値は自然数のみ許容します。:(-3, -1)`, ()=>Random.I(-3,-1))
+    a.e(Error, `引数が二つある時は(分子,分母)であるべきです。各値は自然数のみ有効です(1〜Number.MAX_SAFE_INTEGER):(0, 3)`, ()=>Random.P(0,3))
+    a.e(Error, `引数が二つある時は(分子,分母)であるべきです。各値は自然数のみ有効です(1〜Number.MAX_SAFE_INTEGER):(1, 0)`, ()=>Random.P(1,0))
+
+    // 3. 正常系　複数回試行系
+    a.t(()=>{
+        const Rs = Random.Rs();
+        return Array.isArray(Rs) && 3===Rs.length && Rs.every(v=>0<=v && v<=1);
+    })
+    a.t(()=>{
+        const N = 100;
+        const Rs = Random.Rs(N);
+        return Array.isArray(Rs) && N===Rs.length && Rs.every(v=>0<=v && v<=1);
+    })
+    a.t(()=>{
+        const Is = Random.Is();
+        return Array.isArray(Is) && 3===Is.length && Is.every(v=>0<=v && v<=100-1);
+    })
+    a.t(()=>{
+        const V = 6;
+        const Is = Random.Is(V);
+        return Array.isArray(Is) && 3===Is.length && Is.every(v=>0<=v && v<=V-1);
+    })
+    a.t(()=>{
+        const [V,N] = [6,3];
+        const Is = Random.Is(V, N);
+        return Array.isArray(Is) && N===Is.length && Is.every(v=>0<=v && v<=V-1);
+    })
+    a.t(()=>{
+        const Ns = Random.Ns();
+        return Array.isArray(Ns) && 3===Ns.length && Ns.every(v=>1<=v && v<=100);
+    })
+    a.t(()=>{
+        const V = 6;
+        const Ns = Random.Ns(V);
+        return Array.isArray(Ns) && 3===Ns.length && Ns.every(v=>6<=v && v<=100);
+    })
+    a.t(()=>{
+        const [V,W] = [1,6];
+        const Ns = Random.Ns(V, W);
+        return Array.isArray(Ns) && 3===Ns.length && Ns.every(v=>V<=v && v<=W);
+    })
+    a.t(()=>{
+        const [V,W,N] = [1,6,10]; // 1〜6 10回 3D6
+        const Ns = Random.Ns(V, W, N);
+        return Array.isArray(Ns) && N===Ns.length && Ns.every(v=>V<=v && v<=W);
+    })
+    a.t(()=>{
+        const Ps = Random.Ps();
+        return Array.isArray(Ps) && 3===Ps.length && Ps.every(v=>'boolean'===typeof v);
+    })
+    a.t(()=>{
+        const V = 12.5;
+        const Ps = Random.Ps(V);
+        return Array.isArray(Ps) && 3===Ps.length && Ps.every(v=>'boolean'===typeof v);
+    })
+    a.t(()=>{
+        const [V,N] = [12.5,10]; // 12.5% 10回
+        const Ps = Random.Ps(V, N);
+        return Array.isArray(Ps) && N===Ps.length && Ps.every(v=>'boolean'===typeof v);
+    })
+    a.t(()=>{
+        const Fs = Random.Fs();
+        return Array.isArray(Fs) && 3===Fs.length && Fs.every(v=>'boolean'===typeof v);
+    })
+    a.t(()=>{
+        const V = 2;
+        const Fs = Random.Fs(V); // 2/2 100%
+        return Array.isArray(Fs) && 3===Fs.length && Fs.every(v=>'boolean'===typeof v && true===v);
+    })
+    a.t(()=>{
+        const [V,W] = [2,3]; // 2/3 66.6%
+        const Fs = Random.Fs(V, W);
+        return Array.isArray(Fs) && 3===Fs.length && Fs.every(v=>'boolean'===typeof v);
+    })
+    a.t(()=>{
+        const [V,W,N] = [2,7,10]; // 2/7 28.5% 10回
+        const Fs = Random.Fs(V, W, N);
+        return Array.isArray(Fs) && N===Fs.length && Fs.every(v=>'boolean'===typeof v);
+    })
+
+    // 複数回試行した結果の数と比を返す
+    a.t(()=>{
+        const Pn = Random.Pn();
+        console.log(Pn)
+        return 'object'===typeof Pn && null!==Pn
+            && Pn.hasOwnProperty('t')
+            && Pn.hasOwnProperty('f')
+            && Pn.hasOwnProperty('n')
+            && Pn.hasOwnProperty('r');
+    })
+    a.t(()=>{
+        const V = 12.5;
+        const Pn = Random.Pn(V);
+        console.log(Pn)
+        return 'object'===typeof Pn && null!==Pn
+            && Pn.hasOwnProperty('t')
+            && Pn.hasOwnProperty('f')
+            && Pn.hasOwnProperty('n')
+            && Pn.hasOwnProperty('r');
+    })
+    a.t(()=>{
+        const [V,N] = [12.5,100]; // 12.5% 100回
+        const Pn = Random.Pn(V, N);
+        console.log(Pn)
+        return 'object'===typeof Pn && null!==Pn
+            && Pn.hasOwnProperty('t')
+            && Pn.hasOwnProperty('f')
+            && Pn.hasOwnProperty('n')
+            && Pn.hasOwnProperty('r');
+    })
+    // 分数
+    a.t(()=>{
+        const Fn = Random.Fn(); // 1/2 50% 3回
+        console.log(Fn)
+        return 'object'===typeof Fn && null!==Fn
+            && Fn.hasOwnProperty('t')
+            && Fn.hasOwnProperty('f')
+            && Fn.hasOwnProperty('n')
+            && Fn.hasOwnProperty('r');
+    })
+    a.t(()=>{
+        const V = 2;
+        const Fn = Random.Fn(V); // 2/2 100% 3回
+        console.log(Fn)
+        return 'object'===typeof Fn && null!==Fn
+            && Fn.hasOwnProperty('t')
+            && Fn.hasOwnProperty('f')
+            && Fn.hasOwnProperty('n')
+            && Fn.hasOwnProperty('r');
+    })
+    a.t(()=>{
+        const [V,W] = [3,10]; // 3/10 30%
+        const Fn = Random.Fn(V, W);
+        console.log(Fn)
+        return 'object'===typeof Fn && null!==Fn
+            && Fn.hasOwnProperty('t')
+            && Fn.hasOwnProperty('f')
+            && Fn.hasOwnProperty('n')
+            && Fn.hasOwnProperty('r');
+    })
+    a.t(()=>{
+        const [V,W,N] = [3,4,100]; // 3/4 75% 10回
+        const Fn = Random.Fn(V, W, N);
+        console.log(Fn)
+        return 'object'===typeof Fn && null!==Fn
+            && Fn.hasOwnProperty('t')
+            && Fn.hasOwnProperty('f')
+            && Fn.hasOwnProperty('n')
+            && Fn.hasOwnProperty('r');
+    })
+
+    // 抽選 lottery 0〜Nの整数値を一つ返す。但しその比率は指定したものとする。
+    a.t(()=>{// コイントスを抽選で再現する
+        const coin = Random.L([1,1]); // 0:1/2, 1:1/2
+        return [0,1].some(v=>v===coin);
+    })
+    a.t(()=>{// 賽投げを抽選で再現する
+        const dice = Random.L([1,1,1,1,1,1]); // 0:1/6, 1:1/6, 2:1/6, 3:1/6, 4:1/6, 5:1/6
+        return [0,1,2,3,4,5].some(v=>v===dice);
+    })
+    a.t(()=>{// 宝くじを抽選で再現する
+        const lottery = Random.L([1,3,6]); // 0:1/10, 1:3/10, 2:6/10
+        return [0,1,2].some(v=>v===lottery);
+    })
+    // 抽選を複数回引く
+    a.t(()=>{// 宝くじを抽選で再現する（回数は重みの合計と同数）
+        const Ls = Random.Ls([1,3,6]); // 0:1/10, 1:3/10, 2:6/10
+        console.log(Ls)
+        return 10===Ls.length && Ls.every(v=>[0,1,2].some(x=>x===v));
+    })
+    a.t(()=>{// 宝くじを25回抽選する
+        const Ls = Random.Ls([1,3,6], 25); // 0:1/10, 1:3/10, 2:6/10
+        console.log(Ls)
+        return 25===Ls.length && Ls.every(v=>[0,1,2].some(x=>x===v));
+    })
+    a.t(()=>{// カードダスの抽選を再現する
+        const Ls = Random.Ls([3,1,5,2]); // 0:3/11, 1:3/11, 2:5/11, 3:2/11
+        console.log(Ls)
+        return 11===Ls.length && Ls.every(v=>[0,1,2,3].some(x=>x===v));
+    })
+    // 抽選を複数回引いて集計する
+    a.t(()=>{// 宝くじを抽選で再現する（回数は重みの合計と同数）
+        const Ln = Random.Ln([1,3,6]); // 0:1/10, 1:3/10, 2:6/10
+        console.log(Ln)
+        return 10===Ln.a.length && Ln.a.every(v=>[0,1,2].some(x=>x===v));
+    })
+    a.t(()=>{// 宝くじを抽選で再現する（回数は1）
+        const Ln = Random.Ln([1,3,6],1); // 0:1/10, 1:3/10, 2:6/10
+        console.log(Ln)
+        return 1===Ln.a.length && Ln.a.every(v=>[0,1,2].some(x=>x===v));
+    })
+    // シャッフルする
+    a.t(()=>{
+        const S = Random.S([1,2,3,4,5]);
+        console.log(S);
+        return 5===S.length && S.every(v=>[1,2,3,4,5].some(x=>x===v));
+    })
+
+
+
+
+
+    a.fin();
+});
+</script>

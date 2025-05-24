@@ -3,8 +3,8 @@ class Man {
         this._user = user; // user/auto
         this._name = name; // 名前
         this._life = 10; // 命（生命点）
-        this._act = 3; // 活（活動点）
-        this._cap = 3; // 容（容量点）
+//        this._act = 3; // 活（活動点）
+//        this._cap = 3; // 容（容量点）
         this._hand = -1; // 次に使う手札
         this._hands = []; // 手札
         this._deck = []; // 組、冊
